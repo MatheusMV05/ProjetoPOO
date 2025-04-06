@@ -5,33 +5,34 @@ import java.time.LocalDate;
 
 public class SeguradoPessoa extends Segurado {
 
-    private String cnpj;
+    private String cpf;
     private Double renda;
 
-    public SeguradoPessoa(String cnpj, Double renda, LocalDate dataNascimento, BigDecimal bonus) {
+    public SeguradoPessoa(String nome, Endereco endereco, LocalDate dataNascimento, BigDecimal bonus,
+                          String cpf, double renda) {
         super(nome, endereco, dataNascimento, bonus);
-        this.cnpj = cnpj;
+        this.cpf = cpf;
         this.renda = renda;
     }
 
-    void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public String getCpf() {
+        return cpf;
     }
 
-    String getCnpj() {
-        this.cnpj = cnpj;
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
-    void setRenda(Double renda) {
-        this.renda = renda;
+    public double getRenda() {
+        return renda;
     }
 
-    Double getRenda() {
+    public void setRenda(double renda) {
         this.renda = renda;
     }
 
     public LocalDate getDataNascimento() {
-        return dataCriacao;
+        return getDataCriacao();
     }
 
     public void setDataNascimento(LocalDate dataNascimento) {
