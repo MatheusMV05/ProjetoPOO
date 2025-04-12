@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestesEntidades {
-	@org.junit.Test
 	@Test
 	public void teste01() {		
 		TipoSinistro ts = TipoSinistro.getTipoSinistro(1);

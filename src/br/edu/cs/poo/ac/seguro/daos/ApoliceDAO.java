@@ -16,7 +16,7 @@ public class ApoliceDAO extends DAOGenerico {
         if (buscar(segurado.getNumero()) != null) {
             return false;
         } else {
-            cadastro.incluir((Serializable) segurado, segurado.getNumero());
+            cadastro.incluir(segurado, segurado.getNumero());
             return true;
         }
     }
