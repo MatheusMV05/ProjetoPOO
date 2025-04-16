@@ -14,7 +14,7 @@ public class TesteSeguradoEmpresaDAO extends TesteDAO {
 	protected Class getClasse() {
 		return SeguradoEmpresa.class;
 	}
-	
+
 	@Test
 	public void teste01() {
 		String cnpj = "00000000";
@@ -49,18 +49,18 @@ public class TesteSeguradoEmpresaDAO extends TesteDAO {
 	}
 	@Test
 	public void teste05() {
-		String cnpj = "44000000";		
-		boolean ret = dao.incluir(new SeguradoEmpresa("TESTE5", null, LocalDate.now(), BigDecimal.ZERO, 
-				cnpj, 1004.0, false));		
+		String cnpj = "44000000";
+		boolean ret = dao.incluir(new SeguradoEmpresa("TESTE5", null, LocalDate.now(), BigDecimal.ZERO,
+				cnpj, 1004.0, false));
 		Assertions.assertTrue(ret);
 		SeguradoEmpresa seg = dao.buscar(cnpj);
-		Assertions.assertNotNull(seg);		
+		Assertions.assertNotNull(seg);
 	}
-	
+
 	@Test
 	public void teste06() {
 		String cnpj = "55000000";
-		SeguradoEmpresa seg = new SeguradoEmpresa("TESTE6", null, LocalDate.now(), BigDecimal.ZERO, 
+		SeguradoEmpresa seg = new SeguradoEmpresa("TESTE6", null, LocalDate.now(), BigDecimal.ZERO,
 				cnpj, 1005.0, false);
 		cadastro.incluir(seg, cnpj);
 		boolean ret = dao.incluir(seg);
@@ -68,21 +68,21 @@ public class TesteSeguradoEmpresaDAO extends TesteDAO {
 	}
 	@Test
 	public void teste07() {
-		String cnpj = "66000000";		
-		boolean ret = dao.alterar(new SeguradoEmpresa("TESTE7", null, LocalDate.now(), BigDecimal.ZERO, 
-				cnpj, 1006.0, false));		
+		String cnpj = "66000000";
+		boolean ret = dao.alterar(new SeguradoEmpresa("TESTE7", null, LocalDate.now(), BigDecimal.ZERO,
+				cnpj, 1006.0, false));
 		Assertions.assertFalse(ret);
 		SeguradoEmpresa seg = dao.buscar(cnpj);
-		Assertions.assertNull(seg);		
+		Assertions.assertNull(seg);
 	}
-	
+
 	@Test
 	public void teste08() {
 		String cnpj = "77000000";
-		SeguradoEmpresa seg = new SeguradoEmpresa("TESTE8", null, LocalDate.now(), BigDecimal.ZERO, 
+		SeguradoEmpresa seg = new SeguradoEmpresa("TESTE8", null, LocalDate.now(), BigDecimal.ZERO,
 				cnpj, 1007.0, false);
 		cadastro.incluir(seg, cnpj);
-		seg = new SeguradoEmpresa("TESTE9", null, LocalDate.now(), BigDecimal.ZERO, 
+		seg = new SeguradoEmpresa("TESTE9", null, LocalDate.now(), BigDecimal.ZERO,
 				cnpj, 1008.0, false);
 		boolean ret = dao.alterar(seg);
 		Assertions.assertTrue(ret);
