@@ -2,6 +2,7 @@ package br.edu.cs.poo.ac.seguro.entidades;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,4 +18,5 @@ public class Apolice implements Serializable {
     private BigDecimal valorFranquia;
     private BigDecimal valorPremio;
     private BigDecimal valorMaximoSegurado;
+    private LocalDate dataInicioVigencia;
 }
