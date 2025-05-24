@@ -1,58 +1,25 @@
 package br.edu.cs.poo.ac.seguro.daos;
 
-import br.edu.cesarschool.next.oo.persistenciaobjetos.CadastroObjetos;
 import br.edu.cs.poo.ac.seguro.entidades.Sinistro;
+import br.edu.cs.poo.ac.seguro.entidades.Registro;
 
-import java.io.Serializable;
+public class SinistroDAO extends DAOGenerico<Sinistro> {
 
-public class SinistroDAO extends DAOGenerico {
-    public SinistroDAO() {
-        cadastro = new CadastroObjetos(Sinistro.class);
-    }
-
-    public Sinistro buscar(String numero) {
-        return (Sinistro)cadastro.buscar(numero);
-    }
-
-    public boolean incluir(Sinistro sinistro) {
-        if (buscar(sinistro.getNumero()) != null) {
-            return false;
-        } else {
-            cadastro.incluir((Serializable) sinistro, sinistro.getNumero());
-            return true;
-        }
-    }
-
-    public boolean alterar(Sinistro sinistro) {
-        if (buscar(sinistro.getNumero()) == null) {
-            return false;
-        } else {
-            cadastro.alterar((Serializable) sinistro, sinistro.getNumero());
-            return true;
-        }
-    }
-
-    public boolean excluir(String numero) {
-        if (buscar(numero) == null) {
-            return false;
-        } else {
-            cadastro.excluir(numero);
-            return true;
-        }
+    @Override
+    public Class<Sinistro> getClasseEntidade() {
+        return Sinistro.class;
     }
 
     public Sinistro[] buscarTodos() {
-        Serializable[] objetosSerializaveis = cadastro.buscarTodos();
-
-        if (objetosSerializaveis == null) {
+        Registro[] registros = super.buscarTodos();
+        if (registros == null) {
             return null;
         }
 
-        Sinistro[] sinistros = new Sinistro[objetosSerializaveis.length];
-        for (int i = 0; i < objetosSerializaveis.length; i++) {
-            sinistros[i] = (Sinistro) objetosSerializaveis[i];
+        Sinistro[] sinistros = new Sinistro[registros.length];
+        for (int i = 0; i < registros.length; i++) {
+            sinistros[i] = (Sinistro) registros[i];
         }
-
         return sinistros;
     }
 }
