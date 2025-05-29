@@ -1,20 +1,15 @@
 package br.edu.cs.poo.ac.seguro.daos;
 
 import br.edu.cs.poo.ac.seguro.entidades.SeguradoPessoa;
-import br.edu.cs.poo.ac.seguro.entidades.Segurado;
 
-public class SeguradoPessoaDAO extends SeguradoDAO {
-
+public class SeguradoPessoaDAO extends SeguradoDAO<SeguradoPessoa> {
 	@Override
-	public Class<Segurado> getClasseEntidade() {
-		return Segurado.class;
+	public Class getClasseEntidade() {
+		return SeguradoPessoa.class;
 	}
 
+	// Método específico de busca que usa o método buscar da superclasse
 	public SeguradoPessoa buscar(String cpf) {
-		Segurado seg = super.buscar(cpf);
-		if (seg instanceof SeguradoPessoa) {
-			return (SeguradoPessoa) seg;
-		}
-		return null;
+		return super.buscar(cpf);
 	}
 }

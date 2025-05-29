@@ -8,29 +8,30 @@ public abstract class DAOGenerico<T extends Registro> {
 	private CadastroObjetos cadastro;
 
 	public DAOGenerico() {
-		this.cadastro = new CadastroObjetos(getClasseEntidade());
+		cadastro = new CadastroObjetos(getClasseEntidade());
 	}
 
-	public abstract Class<T> getClasseEntidade();
+	// Método abstrato que deve ser implementado pelas subclasses
+	public abstract Class getClasseEntidade();
 
 	public T buscar(String id) {
 		return (T) cadastro.buscar(id);
 	}
 
-	public boolean incluir(T entidade) {
-		if (buscar(entidade.getIdUnico()) != null) {
+	public boolean incluir(T registro) {
+		if (buscar(registro.getIdUnico()) != null) {
 			return false;
 		} else {
-			cadastro.incluir(entidade, entidade.getIdUnico());
+			cadastro.incluir(registro, registro.getIdUnico());
 			return true;
 		}
 	}
 
-	public boolean alterar(T entidade) {
-		if (buscar(entidade.getIdUnico()) == null) {
+	public boolean alterar(T registro) {
+		if (buscar(registro.getIdUnico()) == null) {
 			return false;
 		} else {
-			cadastro.alterar(entidade, entidade.getIdUnico());
+			cadastro.alterar(registro, registro.getIdUnico());
 			return true;
 		}
 	}
@@ -44,14 +45,15 @@ public abstract class DAOGenerico<T extends Registro> {
 		}
 	}
 
-	public Registro[] buscarTodos() {
-		Serializable[] todos = cadastro.buscarTodos();
-		if (todos == null) {
+	public T[] buscarTodos() {
+		Serializable[] objs = cadastro.buscarTodos();
+		if (objs == null) {
 			return null;
 		}
-		Registro[] registros = new Registro[todos.length];
-		for (int i = 0; i < todos.length; i++) {
-			registros[i] = (Registro) todos[i];
+
+		T[] registros = (T[]) java.lang.reflect.Array.newInstance(getClasseEntidade(), objs.length);
+		for (int i = 0; i < objs.length; i++) {
+			registros[i] = (T) objs[i];
 		}
 		return registros;
 	}

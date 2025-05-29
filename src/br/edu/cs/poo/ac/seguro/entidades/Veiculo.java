@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
+
 
 @Getter
 @Setter
