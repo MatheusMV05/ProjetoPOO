@@ -1,11 +1,13 @@
 package br.edu.cs.poo.ac.seguro.telas;
 
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Comparator;
-
 
 import br.edu.cs.poo.ac.seguro.entidades.CategoriaVeiculo;
 import br.edu.cs.poo.ac.seguro.mediators.ApoliceMediator;
@@ -15,81 +17,111 @@ import br.edu.cs.poo.ac.seguro.mediators.RetornoInclusaoApolice;
 public class TelaInclusaoApolice extends JFrame {
 
     private ApoliceMediator mediator;
-    private JTextField txtCpfOuCnpj;
-    private JTextField txtPlaca;
-    private JTextField txtAno;
-    private JTextField txtValorMaximoSegurado;
+    private JTextField txtCpfOuCnpj; // Mantido como JTextField pela complexidade da máscara condicional
+    private JTextField txtPlaca;     // Placa pode ter formatos variados (Mercosul, antigo)
+    private JFormattedTextField txtAno;
+    private JFormattedTextField txtValorMaximoSegurado;
     private JComboBox<String> cmbCategoriaVeiculo;
 
     private JButton btnIncluir;
     private JButton btnLimpar;
 
+    protected MaskFormatter createFormatter(String formatString) {
+        MaskFormatter formatter = null;
+        try {
+            formatter = new MaskFormatter(formatString);
+            formatter.setPlaceholderCharacter('_');
+        } catch (java.text.ParseException exc) {
+            System.err.println("Erro na formatação da máscara: " + exc.getMessage());
+            JOptionPane.showMessageDialog(this, "Erro ao criar máscara de campo: " + formatString, "Erro de Configuração", JOptionPane.ERROR_MESSAGE);
+        }
+        return formatter;
+    }
+
     public TelaInclusaoApolice() {
-        mediator = ApoliceMediator.getInstancia(); // [cite: 26]
+        mediator = ApoliceMediator.getInstancia();
         setTitle("Inclusão de Apólice");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Dispose on close if it's a secondary window
-        setSize(450, 300);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // setSize(450, 300); // pack() no final pode ser melhor
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-
+        // gbc.weightx = 1.0; // Removido para melhor ajuste com pack()
 
         // CPF ou CNPJ
-        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0; gbc.gridy = 0; //gbc.anchor = GridBagConstraints.WEST;
         add(new JLabel("CPF/CNPJ do Segurado:"), gbc);
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
-        txtCpfOuCnpj = new JTextField(20); // [cite: 27]
+        gbc.gridx = 1; //gbc.anchor = GridBagConstraints.EAST;
+        txtCpfOuCnpj = new JTextField(20);
         add(txtCpfOuCnpj, gbc);
 
         // Placa
-        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0; gbc.gridy = 1;
         add(new JLabel("Placa do Veículo:"), gbc);
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
-        txtPlaca = new JTextField(20); // [cite: 27]
+        gbc.gridx = 1;
+        txtPlaca = new JTextField(20);
         add(txtPlaca, gbc);
 
         // Ano
-        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0; gbc.gridy = 2;
         add(new JLabel("Ano do Veículo:"), gbc);
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
-        txtAno = new JTextField(20); // [cite: 27]
+        gbc.gridx = 1;
+        NumberFormat anoFormat = NumberFormat.getIntegerInstance();
+        anoFormat.setGroupingUsed(false); // Sem separador de milhar
+        txtAno = new JFormattedTextField(anoFormat);
+        txtAno.setColumns(4);
         add(txtAno, gbc);
 
         // Valor Máximo Segurado
-        gbc.gridx = 0; gbc.gridy = 3; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0; gbc.gridy = 3;
         add(new JLabel("Valor Máximo Segurado (R$):"), gbc);
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
-        txtValorMaximoSegurado = new JTextField(20); // [cite: 27]
+        gbc.gridx = 1;
+        NumberFormat valorFormat = NumberFormat.getNumberInstance(); // Ou getCurrencyInstance()
+        valorFormat.setMinimumFractionDigits(2);
+        valorFormat.setMaximumFractionDigits(2);
+        txtValorMaximoSegurado = new JFormattedTextField(valorFormat);
+        txtValorMaximoSegurado.setColumns(15);
+        txtValorMaximoSegurado.setValue(0.00);
         add(txtValorMaximoSegurado, gbc);
 
         // Categoria do Veículo
-        gbc.gridx = 0; gbc.gridy = 4; gbc.anchor = GridBagConstraints.WEST;
-        add(new JLabel("Categoria do Veículo:"), gbc); // [cite: 29]
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0; gbc.gridy = 4;
+        add(new JLabel("Categoria do Veículo:"), gbc);
+        gbc.gridx = 1;
         cmbCategoriaVeiculo = new JComboBox<>();
         popularComboCategoriaVeiculo();
         add(cmbCategoriaVeiculo, gbc);
 
-        // Buttons Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        btnIncluir = new JButton("Incluir"); // [cite: 30]
-        btnLimpar = new JButton("Limpar"); // [cite: 30]
+        btnIncluir = new JButton("Incluir");
+        btnLimpar = new JButton("Limpar");
         buttonPanel.add(btnIncluir);
         buttonPanel.add(btnLimpar);
 
         gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.NONE; gbc.anchor = GridBagConstraints.CENTER;
         add(buttonPanel, gbc);
 
-        // Event Handlers
         btnIncluir.addActionListener(e -> {
             try {
                 String cpfOuCnpj = txtCpfOuCnpj.getText().trim();
                 String placa = txtPlaca.getText().trim();
-                int ano = Integer.parseInt(txtAno.getText().trim()); // [cite: 28]
-                BigDecimal valorMaxSegurado = new BigDecimal(txtValorMaximoSegurado.getText().trim()); // [cite: 28]
+
+                int ano;
+                if (txtAno.getValue() instanceof Number) {
+                    ano = ((Number) txtAno.getValue()).intValue();
+                } else {
+                    throw new NumberFormatException("Ano inválido.");
+                }
+
+                BigDecimal valorMaxSegurado;
+                if (txtValorMaximoSegurado.getValue() instanceof Number) {
+                    valorMaxSegurado = BigDecimal.valueOf(((Number) txtValorMaximoSegurado.getValue()).doubleValue());
+                } else {
+                    throw new NumberFormatException("Valor máximo segurado inválido.");
+                }
+
 
                 int selectedIndex = cmbCategoriaVeiculo.getSelectedIndex();
                 if (selectedIndex < 0) {
@@ -98,13 +130,13 @@ public class TelaInclusaoApolice extends JFrame {
                 }
                 String selectedCategoriaName = (String) cmbCategoriaVeiculo.getSelectedItem();
                 CategoriaVeiculo selectedCategoria = null;
-                for(CategoriaVeiculo cat : CategoriaVeiculo.values()){
-                    if(cat.getNome().equals(selectedCategoriaName)){
+                for (CategoriaVeiculo cat : CategoriaVeiculo.values()) {
+                    if (cat.getNome().equals(selectedCategoriaName)) {
                         selectedCategoria = cat;
                         break;
                     }
                 }
-                if(selectedCategoria == null) {
+                if (selectedCategoria == null) {
                     JOptionPane.showMessageDialog(this, "Categoria de veículo inválida.", "Erro", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -114,13 +146,13 @@ public class TelaInclusaoApolice extends JFrame {
                 RetornoInclusaoApolice retorno = mediator.incluirApolice(dados);
 
                 if (retorno.getMensagemErro() != null) {
-                    JOptionPane.showMessageDialog(this, retorno.getMensagemErro(), "Erro de Validação", JOptionPane.ERROR_MESSAGE); // [cite: 34]
+                    JOptionPane.showMessageDialog(this, retorno.getMensagemErro(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Apólice incluída com sucesso! Anote o número da apólice: " + retorno.getNumeroApolice(), "Sucesso", JOptionPane.INFORMATION_MESSAGE); // [cite: 32, 33]
+                    JOptionPane.showMessageDialog(this, "Apólice incluída com sucesso! Anote o número da apólice: " + retorno.getNumeroApolice(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     limparCampos();
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Ano e Valor Máximo Segurado devem ser números válidos.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Ano e Valor Máximo Segurado devem ser números válidos. " + ex.getMessage(), "Erro de Formato", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro ao incluir apólice: " + ex.getMessage(), "Erro Inesperado", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
@@ -129,9 +161,8 @@ public class TelaInclusaoApolice extends JFrame {
 
         btnLimpar.addActionListener(e -> limparCampos());
 
-        pack(); // Adjusts frame size to components
-        if (getHeight() < 300) setSize(getWidth(), 300); // Ensure minimum height
-        if (getWidth() < 450) setSize(450, getHeight()); // Ensure minimum width
+        pack(); // Ajusta o tamanho da janela aos componentes
+        setMinimumSize(new Dimension(450, getHeight())); // Garante largura mínima
         setVisible(true);
     }
 
@@ -141,27 +172,28 @@ public class TelaInclusaoApolice extends JFrame {
         for (int i = 0; i < categorias.length; i++) {
             nomesCategorias[i] = categorias[i].getNome();
         }
-        Arrays.sort(nomesCategorias, Comparator.naturalOrder()); // Sort alphabetically [cite: 29]
+        Arrays.sort(nomesCategorias, Comparator.naturalOrder());
 
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(nomesCategorias);
         cmbCategoriaVeiculo.setModel(model);
 
         if (cmbCategoriaVeiculo.getItemCount() > 0) {
-            cmbCategoriaVeiculo.setSelectedIndex(0); // [cite: 31]
+            cmbCategoriaVeiculo.setSelectedIndex(0);
         }
     }
 
     private void limparCampos() {
         txtCpfOuCnpj.setText("");
         txtPlaca.setText("");
-        txtAno.setText("");
-        txtValorMaximoSegurado.setText("");
+        txtAno.setValue(null); txtAno.setText("");// Limpa para JFormattedTextField
+        txtValorMaximoSegurado.setValue(0.00); // Reseta para valor numérico padrão
         if (cmbCategoriaVeiculo.getItemCount() > 0) {
-            cmbCategoriaVeiculo.setSelectedIndex(0); // [cite: 31]
+            cmbCategoriaVeiculo.setSelectedIndex(0);
         }
+        txtCpfOuCnpj.requestFocusInWindow();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new TelaInclusaoApolice());
+        SwingUtilities.invokeLater(TelaInclusaoApolice::new);
     }
 }

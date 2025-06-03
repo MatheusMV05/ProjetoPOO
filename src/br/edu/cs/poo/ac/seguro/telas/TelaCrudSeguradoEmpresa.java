@@ -1,8 +1,11 @@
 package br.edu.cs.poo.ac.seguro.telas;
 
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -13,16 +16,15 @@ import br.edu.cs.poo.ac.seguro.mediators.SeguradoEmpresaMediator;
 public class TelaCrudSeguradoEmpresa extends JFrame {
 
     private SeguradoEmpresaMediator mediator = SeguradoEmpresaMediator.getInstancia();
-    private JTextField txtCnpj;
+    private JFormattedTextField txtCnpj;
     private JTextField txtNome;
-    private JTextField txtDataAbertura;
-    private JTextField txtFaturamento;
-    private JTextField txtBonus;
-    private JCheckBox chkEhLocadora; // Checkbox
+    private JFormattedTextField txtDataAbertura;
+    private JFormattedTextField txtFaturamento;
+    private JFormattedTextField txtBonus;
+    private JCheckBox chkEhLocadora;
 
-    // Endereco fields
     private JTextField txtLogradouro;
-    private JTextField txtCep;
+    private JFormattedTextField txtCep;
     private JTextField txtNumeroEndereco;
     private JTextField txtComplemento;
     private JTextField txtCidade;
@@ -38,10 +40,22 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    protected MaskFormatter createFormatter(String formatString) {
+        MaskFormatter formatter = null;
+        try {
+            formatter = new MaskFormatter(formatString);
+            formatter.setPlaceholderCharacter('_');
+        } catch (java.text.ParseException exc) {
+            System.err.println("Erro na formatação da máscara: " + exc.getMessage());
+            JOptionPane.showMessageDialog(this, "Erro ao criar máscara de campo: " + formatString, "Erro de Configuração", JOptionPane.ERROR_MESSAGE);
+        }
+        return formatter;
+    }
+
     public TelaCrudSeguradoEmpresa() {
         setTitle("CRUD de Segurado Empresa");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(650, 550); // Adjusted size
+        setSize(650, 550);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -52,7 +66,8 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         gbc.gridx = 0; gbc.gridy = 0;
         add(new JLabel("CNPJ:"), gbc);
         gbc.gridx = 1; gbc.weightx = 1.0;
-        txtCnpj = new JTextField(20);
+        txtCnpj = new JFormattedTextField(createFormatter("##.###.###/####-##"));
+        txtCnpj.setColumns(18);
         add(txtCnpj, gbc);
         gbc.weightx = 0.0;
 
@@ -76,7 +91,8 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         gbc.gridx = 0; gbc.gridy = 2;
         add(new JLabel("Data Abertura (dd/MM/yyyy):"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 3;
-        txtDataAbertura = new JTextField(20);
+        txtDataAbertura = new JFormattedTextField(createFormatter("##/##/####"));
+        txtDataAbertura.setColumns(10);
         add(txtDataAbertura, gbc);
         gbc.gridwidth = 1;
 
@@ -84,7 +100,12 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         gbc.gridx = 0; gbc.gridy = 3;
         add(new JLabel("Faturamento:"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 3;
-        txtFaturamento = new JTextField(20);
+        NumberFormat faturamentoFormat = NumberFormat.getNumberInstance(); // Ou getCurrencyInstance()
+        faturamentoFormat.setMinimumFractionDigits(2);
+        faturamentoFormat.setMaximumFractionDigits(2);
+        txtFaturamento = new JFormattedTextField(faturamentoFormat);
+        txtFaturamento.setColumns(15);
+        txtFaturamento.setValue(0.00);
         add(txtFaturamento, gbc);
         gbc.gridwidth = 1;
 
@@ -92,7 +113,12 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         gbc.gridx = 0; gbc.gridy = 4;
         add(new JLabel("Bônus:"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 3;
-        txtBonus = new JTextField(20);
+        NumberFormat bonusFormat = NumberFormat.getNumberInstance();
+        bonusFormat.setMinimumFractionDigits(2);
+        bonusFormat.setMaximumFractionDigits(2);
+        txtBonus = new JFormattedTextField(bonusFormat);
+        txtBonus.setColumns(15);
+        txtBonus.setValue(0.00);
         add(txtBonus, gbc);
         gbc.gridwidth = 1;
 
@@ -104,7 +130,7 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         add(chkEhLocadora, gbc);
         gbc.gridwidth = 1;
 
-        // Endereço Fields (Similar to SeguradoPessoa)
+        // Endereço Fields
         gbc.gridx = 0; gbc.gridy = 6;
         add(new JLabel("Logradouro:"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 3;
@@ -115,7 +141,8 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         gbc.gridx = 0; gbc.gridy = 7;
         add(new JLabel("CEP:"), gbc);
         gbc.gridx = 1;
-        txtCep = new JTextField(10);
+        txtCep = new JFormattedTextField(createFormatter("#####-###"));
+        txtCep.setColumns(9);
         add(txtCep, gbc);
 
         gbc.gridx = 2;
@@ -150,7 +177,6 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         add(txtPais, gbc);
         gbc.gridwidth = 1;
 
-        // Panel for buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         btnIncluirAlterar = new JButton("Incluir");
         btnExcluir = new JButton("Excluir");
@@ -165,14 +191,13 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         gbc.gridx = 0; gbc.gridy = 11; gbc.gridwidth = 4; gbc.anchor = GridBagConstraints.CENTER;
         add(buttonPanel, gbc);
 
-        // Event Handlers
         btnNovo.addActionListener(e -> {
-            String cnpj = txtCnpj.getText().trim();
-            if (cnpj.isEmpty()) {
+            String cnpjInput = txtCnpj.getText().replaceAll("[^0-9]", "");
+            if (cnpjInput.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "CNPJ deve ser informado para verificar existência.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            SeguradoEmpresa seg = mediator.buscarSeguradoEmpresa(cnpj);
+            SeguradoEmpresa seg = mediator.buscarSeguradoEmpresa(cnpjInput);
             if (seg != null) {
                 JOptionPane.showMessageDialog(this, "Segurado Empresa já existente!", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -185,12 +210,12 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         });
 
         btnBuscar.addActionListener(e -> {
-            String cnpj = txtCnpj.getText().trim();
-            if (cnpj.isEmpty()) {
+            String cnpjInput = txtCnpj.getText().replaceAll("[^0-9]", "");
+            if (cnpjInput.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "CNPJ deve ser informado para busca.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            SeguradoEmpresa seg = mediator.buscarSeguradoEmpresa(cnpj);
+            SeguradoEmpresa seg = mediator.buscarSeguradoEmpresa(cnpjInput);
             if (seg == null) {
                 JOptionPane.showMessageDialog(this, "Segurado Empresa não existente!", "Informação", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -206,16 +231,28 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
 
         btnIncluirAlterar.addActionListener(e -> {
             try {
-                String cnpj = txtCnpj.getText().trim();
+                String cnpj = txtCnpj.getText().replaceAll("[^0-9]", "");
                 String nome = txtNome.getText().trim();
-                LocalDate dataAbertura = LocalDate.parse(txtDataAbertura.getText().trim(), DATE_FORMATTER);
-                double faturamento = Double.parseDouble(txtFaturamento.getText().trim());
-                BigDecimal bonus = new BigDecimal(txtBonus.getText().trim());
+                LocalDate dataAbertura = LocalDate.parse(txtDataAbertura.getText(), DATE_FORMATTER);
+
+                double faturamento;
+                if (txtFaturamento.getValue() instanceof Number) {
+                    faturamento = ((Number) txtFaturamento.getValue()).doubleValue();
+                } else {
+                    throw new NumberFormatException("Faturamento inválido.");
+                }
+
+                BigDecimal bonus;
+                if (txtBonus.getValue() instanceof Number) {
+                    bonus = BigDecimal.valueOf(((Number) txtBonus.getValue()).doubleValue());
+                } else {
+                    throw new NumberFormatException("Bônus inválido.");
+                }
                 boolean ehLocadora = chkEhLocadora.isSelected();
 
                 Endereco endereco = new Endereco(
                         txtLogradouro.getText().trim(),
-                        txtCep.getText().trim(),
+                        txtCep.getText().replaceAll("[^0-9]", ""),
                         txtNumeroEndereco.getText().trim(),
                         txtComplemento.getText().trim(),
                         txtPais.getText().trim(),
@@ -242,16 +279,17 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
                     resetarTelaParaEstadoInicial();
                 }
             } catch (DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(this, "Data de Abertura inválida. Use o formato dd/MM/yyyy.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Data de Abertura inválida. Use o formato dd/MM/yyyy e preencha corretamente.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Faturamento e/ou Bônus devem ser números válidos.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Faturamento e/ou Bônus devem ser números válidos. " + ex.getMessage(), "Erro de Formato", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro Inesperado", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
         });
 
         btnExcluir.addActionListener(e -> {
-            String cnpj = txtCnpj.getText().trim();
+            String cnpj = txtCnpj.getText().replaceAll("[^0-9]", "");
             if (cnpj.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "CNPJ não carregado para exclusão.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -271,8 +309,9 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         btnCancelar.addActionListener(e -> resetarTelaParaEstadoInicial());
 
         btnLimpar.addActionListener(e -> {
-            limparCamposTexto();
+            limparCamposTextoParcial();
             if (txtCnpj.isEditable()) {
+                txtCnpj.setValue(null);
                 txtCnpj.setText("");
             }
         });
@@ -286,7 +325,7 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         txtDataAbertura.setEditable(habilitar);
         txtFaturamento.setEditable(habilitar);
         txtBonus.setEditable(habilitar);
-        chkEhLocadora.setEnabled(habilitar);
+        chkEhLocadora.setEnabled(habilitar); // Checkbox usa setEnabled
         txtLogradouro.setEditable(habilitar);
         txtCep.setEditable(habilitar);
         txtNumeroEndereco.setEditable(habilitar);
@@ -299,14 +338,29 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
         btnCancelar.setEnabled(habilitar);
     }
 
-    private void limparCamposTexto() {
+    private void limparCamposTextoParcial() {
+        if (txtNome.isEditable()) txtNome.setText("");
+        if (txtDataAbertura.isEditable()) {txtDataAbertura.setValue(null); txtDataAbertura.setText("");}
+        if (txtFaturamento.isEditable()) txtFaturamento.setValue(0.00);
+        if (txtBonus.isEditable()) txtBonus.setValue(0.00);
+        if (chkEhLocadora.isEnabled()) chkEhLocadora.setSelected(false);
+        if (txtLogradouro.isEditable()) txtLogradouro.setText("");
+        if (txtCep.isEditable()) {txtCep.setValue(null); txtCep.setText("");}
+        if (txtNumeroEndereco.isEditable()) txtNumeroEndereco.setText("");
+        if (txtComplemento.isEditable()) txtComplemento.setText("");
+        if (txtCidade.isEditable()) txtCidade.setText("");
+        if (txtEstado.isEditable()) txtEstado.setText("");
+        if (txtPais.isEditable()) txtPais.setText("");
+    }
+
+    private void limparCamposTextoCompleto() {
         txtNome.setText("");
-        txtDataAbertura.setText("");
-        txtFaturamento.setText("");
-        txtBonus.setText("");
+        txtDataAbertura.setValue(null); txtDataAbertura.setText("");
+        txtFaturamento.setValue(0.00);
+        txtBonus.setValue(0.00);
         chkEhLocadora.setSelected(false);
         txtLogradouro.setText("");
-        txtCep.setText("");
+        txtCep.setValue(null); txtCep.setText("");
         txtNumeroEndereco.setText("");
         txtComplemento.setText("");
         txtCidade.setText("");
@@ -317,15 +371,15 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
     private void preencherCamposComDados(SeguradoEmpresa seg) {
         txtCnpj.setText(seg.getCnpj());
         txtNome.setText(seg.getNome());
-        txtDataAbertura.setText(seg.getDataAbertura() != null ? seg.getDataAbertura().format(DATE_FORMATTER) : "");
-        txtFaturamento.setText(String.valueOf(seg.getFaturamento()));
-        txtBonus.setText(seg.getBonus() != null ? seg.getBonus().toPlainString() : "0.00");
+        txtDataAbertura.setText(seg.getDataAbertura() != null ? seg.getDataAbertura().format(DATE_FORMATTER) : null);
+        txtFaturamento.setValue(seg.getFaturamento());
+        txtBonus.setValue(seg.getBonus() != null ? seg.getBonus() : BigDecimal.ZERO);
         chkEhLocadora.setSelected(seg.getEhLocadoraDeVeiculos());
 
         if (seg.getEndereco() != null) {
             Endereco end = seg.getEndereco();
             txtLogradouro.setText(end.getLogradouro() != null ? end.getLogradouro() : "");
-            txtCep.setText(end.getCep() != null ? end.getCep() : "");
+            txtCep.setText(end.getCep() != null ? end.getCep() : null);
             txtNumeroEndereco.setText(end.getNumero() != null ? end.getNumero() : "");
             txtComplemento.setText(end.getComplemento() != null ? end.getComplemento() : "");
             txtCidade.setText(end.getCidade() != null ? end.getCidade() : "");
@@ -338,7 +392,7 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
 
     private void limparCamposEndereco() {
         txtLogradouro.setText("");
-        txtCep.setText("");
+        txtCep.setValue(null); txtCep.setText("");
         txtNumeroEndereco.setText("");
         txtComplemento.setText("");
         txtCidade.setText("");
@@ -347,8 +401,8 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
     }
 
     private void resetarTelaParaEstadoInicial() {
-        limparCamposTexto();
-        txtCnpj.setText("");
+        limparCamposTextoCompleto();
+        txtCnpj.setValue(null); txtCnpj.setText("");
         txtCnpj.setEditable(true);
         habilitarCamposEdicao(false);
         btnNovo.setEnabled(true);
@@ -359,6 +413,6 @@ public class TelaCrudSeguradoEmpresa extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new TelaCrudSeguradoEmpresa());
+        SwingUtilities.invokeLater(TelaCrudSeguradoEmpresa::new);
     }
 }
