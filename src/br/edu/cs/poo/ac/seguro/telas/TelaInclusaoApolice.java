@@ -3,6 +3,7 @@ package br.edu.cs.poo.ac.seguro.telas;
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -161,9 +162,51 @@ public class TelaInclusaoApolice extends JFrame {
 
         btnLimpar.addActionListener(e -> limparCampos());
 
+        // Configurar para que o botão Limpar responda ao Enter quando estiver com foco
+        btnLimpar.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "limpar");
+        btnLimpar.getActionMap().put("limpar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                limparCampos();
+            }
+        });
+
         pack(); // Ajusta o tamanho da janela aos componentes
         setMinimumSize(new Dimension(450, getHeight())); // Garante largura mínima
+        getRootPane().setDefaultButton(btnIncluir); // Enter para o botão Incluir
         setVisible(true);
+    }
+
+    private void configurarTeclasAtalho() {
+        // Configurar Shift+Tab para o botão Limpar
+        KeyStroke shiftTab = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(shiftTab, "limpar");
+        getRootPane().getActionMap().put("limpar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                limparCampos();
+            }
+        });
+
+        // Alternativa: usar F5 para limpar (mais comum)
+        KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "limpar_f5");
+        getRootPane().getActionMap().put("limpar_f5", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                limparCampos();
+            }
+        });
+
+        // Configurar Ctrl+L para limpar (outra opção comum)
+        KeyStroke ctrlL = KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlL, "limpar_ctrl");
+        getRootPane().getActionMap().put("limpar_ctrl", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                limparCampos();
+            }
+        });
     }
 
     private void popularComboCategoriaVeiculo() {

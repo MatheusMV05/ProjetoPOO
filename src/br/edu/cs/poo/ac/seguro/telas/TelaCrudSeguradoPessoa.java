@@ -3,6 +3,7 @@ package br.edu.cs.poo.ac.seguro.telas;
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -281,6 +282,11 @@ public class TelaCrudSeguradoPessoa extends JFrame {
             }
         });
 
+        pack(); // Ajusta o tamanho da janela
+        setMinimumSize(new Dimension(480, getHeight())); // Garante largura mínima
+        getRootPane().setDefaultButton(btnIncluirAlterar); // Enter para o botão Incluir
+        setVisible(true);
+
         btnExcluir.addActionListener(e -> {
             String cpf = txtCpf.getText().replaceAll("[^0-9]", "");
             if (cpf.isEmpty()) {
@@ -306,6 +312,48 @@ public class TelaCrudSeguradoPessoa extends JFrame {
             if (txtCpf.isEditable()) {
                 txtCpf.setValue(null); // Limpa CPF se estiver editável
                 txtCpf.setText("");
+            }
+        });
+
+        btnLimpar.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "limpar");
+        btnLimpar.getActionMap().put("limpar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                limparCamposTextoParcial();
+                limparCamposTextoCompleto();
+                limparCamposEndereco();
+            }
+        });
+
+        btnNovo.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "novo");
+        btnNovo.getActionMap().put("novo", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                btnNovo.doClick(); // Simula o clique no botão
+            }
+        });
+
+        btnBuscar.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "buscar");
+        btnBuscar.getActionMap().put("buscar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                btnBuscar.doClick(); // Simula o clique no botão
+            }
+        });
+
+        btnExcluir.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "excluir");
+        btnExcluir.getActionMap().put("excluir", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                btnExcluir.doClick(); // Simula o clique no botão
+            }
+        });
+
+        btnCancelar.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "cancelar");
+        btnCancelar.getActionMap().put("cancelar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                btnCancelar.doClick(); // Simula o clique no botão
             }
         });
 

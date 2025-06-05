@@ -3,6 +3,7 @@ package br.edu.cs.poo.ac.seguro.telas;
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -161,8 +162,17 @@ public class TelaInclusaoSinistro extends JFrame {
 
         btnLimpar.addActionListener(e -> limparCampos());
 
+        btnLimpar.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "limpar");
+        btnLimpar.getActionMap().put("limpar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                limparCampos();
+            }
+        });
+
         pack(); // Ajusta o tamanho da janela
         setMinimumSize(new Dimension(480, getHeight())); // Garante largura mínima
+        getRootPane().setDefaultButton(btnIncluir); // Enter para o botão Incluir
         setVisible(true);
     }
 
