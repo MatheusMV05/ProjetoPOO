@@ -56,7 +56,7 @@ public class SinistroMediator {
 
         // Validação: placa do veículo não pode ser null nem branco
         if (StringUtils.ehNuloOuBranco(dados.getPlaca())) {
-            mensagensErro.add("Placa do Veículo deve ser informada");
+            mensagensErro.add("Placa do Veiculo deve ser informada");
         }
 
         // Validação: placa, se informada, deve ser de um veículo cadastrado
@@ -64,13 +64,13 @@ public class SinistroMediator {
         if (!StringUtils.ehNuloOuBranco(dados.getPlaca())) {
             veiculo = daoVeiculo.buscar(dados.getPlaca());
             if (veiculo == null) {
-                mensagensErro.add("Veículo não cadastrado");
+                mensagensErro.add("Veiculo não cadastrado");
             }
         }
 
         // Validação: usuário do registro não pode ser null nem branco
         if (StringUtils.ehNuloOuBranco(dados.getUsuarioRegistro())) {
-            mensagensErro.add("Usuário do registro de sinistro deve ser informado");
+            mensagensErro.add("Usuario do registro de sinistro deve ser informado");
         }
 
         // Validação: valor do sinistro deve ser maior que zero
@@ -81,7 +81,7 @@ public class SinistroMediator {
         // Validação: código do tipo de sinistro deve ser válido
         TipoSinistro tipoSinistro = TipoSinistro.getTipoSinistro(dados.getCodigoTipoSinistro());
         if (tipoSinistro == null) {
-            mensagensErro.add("Código do tipo de sinistro inválido");
+            mensagensErro.add("Codigo do tipo de sinistro invalido");
         }
 
         // Se houver erros até aqui, lançar exceção
@@ -93,7 +93,7 @@ public class SinistroMediator {
         Apolice apoliceVigente = buscarApoliceVigente(veiculo, dados.getDataHoraSinistro());
 
         if (apoliceVigente == null) {
-            mensagensErro.add("Não existe apólice vigente para o veículo");
+            mensagensErro.add("Nao existe apolice vigente para o veiculo");
             throw excecao;
         }
 
@@ -101,7 +101,7 @@ public class SinistroMediator {
         // Usar new BigDecimal(double) para manter compatibilidade com os testes
         BigDecimal valorSinistro = new BigDecimal(dados.getValorSinistro());
         if (valorSinistro.compareTo(apoliceVigente.getValorMaximoSegurado()) > 0) {
-            mensagensErro.add("Valor do sinistro não pode ultrapassar o valor máximo segurado constante na apólice");
+            mensagensErro.add("Valor do sinistro nao pode ultrapassar o valor maximo segurado constante na apolice");
             throw excecao;
         }
 
