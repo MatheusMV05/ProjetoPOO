@@ -171,10 +171,27 @@ public class TelaInclusaoApolice extends JFrame {
             }
         });
 
+        // ESC para fechar a interface
+        configurarEscParaFechar();
+
         pack(); // Ajusta o tamanho da janela aos componentes
         setMinimumSize(new Dimension(450, getHeight())); // Garante largura mínima
         getRootPane().setDefaultButton(btnIncluir); // Enter para o botão Incluir
         setVisible(true);
+    }
+
+    private void configurarEscParaFechar() {
+        // ESC para fechar a interface
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "fechar_interface");
+        getRootPane().getActionMap().put("fechar_interface", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                // Fechar a janela
+                setVisible(false);
+                dispose();
+            }
+        });
     }
 
     private void configurarTeclasAtalho() {
